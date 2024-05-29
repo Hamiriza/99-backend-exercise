@@ -1,0 +1,38 @@
+version: "3.3"
+
+services:
+  listing:
+    container_name: listing-service
+    build: ./services/listings
+    ports:
+      - "6000:6000"
+    networks:
+      - app-network
+
+  user:
+    container_name: user-service
+    build: ./services/users
+    ports:
+      - "6001:6001"
+    networks:
+      - app-network
+
+  public-api:
+    container_name: public-api-service
+    build: ./services/public-api
+    ports:
+      - "6002:6002"
+    environment:
+      - LISTINGS_URL=http://listing:6000/listings
+      - USERS_URL=http://user:6001/users
+    depends_on:
+      listing:
+        condition: service_started
+      user:
+        condition: service_started
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
