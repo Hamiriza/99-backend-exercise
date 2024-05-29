@@ -21,7 +21,9 @@ class BaseHandler(tornado.web.RequestHandler):
 class ListingsHandler(BaseHandler):
     @tornado.gen.coroutine
     def get_user(self, user_id, http_client):
+        logging.info(user_id)
         userURL = USERS_URL + "/" + str(user_id)
+        logging.info(userURL)
         usersResp = yield http_client.fetch(userURL, raise_error=False)
         userJSON = json.loads(usersResp.body.decode('utf-8'))
         if not userJSON['result']:
@@ -81,10 +83,25 @@ class ListingsHandler(BaseHandler):
         http_client = AsyncHTTPClient()
         try:
             # Collecting required params
+            user_id = self.get_argument("user_id")
+            listing_type = self.get_argument("listing_type")
+            price = self.get_argument("price")
+            
+
+            # Check if user exists
+            user_url = f"{USERS_URL}/{user_id}"
+            user_resp = yield http_client.fetch(user_url, raise_error=False)
+            user_json = json.loads(user_resp.body.decode('utf-8'))
+            if not user_json['result']:
+                http_client.close()
+                self.write_json({"result": False, "errors": "User does not exist"}, status_code=400)
+                return
+            
+            # Create a listing
             post_data = {
-                "user_id": self.get_argument("user_id"),
-                "listing_type": self.get_argument("listing_type"),
-                "price": self.get_argument("price")
+                "user_id": user_id,
+                "listing_type": listing_type,
+                "price": price
             }
             body = urllib.parse.urlencode(post_data)
             listingResp = yield http_client.fetch(LISTINGS_URL, method="POST", headers=None, body=body, raise_error=False)
@@ -97,6 +114,7 @@ class ListingsHandler(BaseHandler):
             http_client.close()
 
         self.write_json({"result": True, "listing": listing}, status_code=200)
+          
 
 class UsersHandler(BaseHandler):
     @tornado.gen.coroutine
