@@ -1,8 +1,6 @@
 # Backend Tech Challenge
 
-An exercise to assess your skills with backend development and microservices architecture.
-
-You are required to use either Java (Spring Boot), Go, or Python (Tornado framework). A great submission would demonstrate a grasp of the principles of microservice architecture.
+An exercise for backend development and microservices architecture using Python (Tornado framework).
 
 ## Introduction
 
@@ -274,9 +272,7 @@ Response:
 
 ## Setup
 
-The listing service has been built already. You need to build the remaining two components: the user service and the public API layer.
-
-The first priority would be to get the listing service up and running! You will need Python 3 to run the example.
+Python 3 is needed to run the applications for this exercise
 
 ### Install pip
 
@@ -310,12 +306,34 @@ You'll see `(env)` show up at the beginning of the command line if you've starte
 tornado==6.1
 ```
 
-### Run the listing service
+## Initialize database
 
-run the following command at the root project
+We will populate the database with random data that is generated using the script `generate_data.py`. To run the script, go to the root project directory and run the command below:
+
+For windows users, run the python file directly:
 
 ```bash
-# Run the listing service
+# Initialize the database and populate the listings and users database
+python generate_data.py
+```
+
+For Linux or Mac, run the bash script with the same name:
+
+```bash
+# Initialize the database and populate the listings and users database
+sh generate_data.sh
+```
+
+## 1. Running the services manually
+
+Each service needs to be run in separate terminal.
+
+### Run the listing service
+
+At the project root directory, enter the command shown below:
+
+```bash
+cd ./services/listings
 python listing_service.py --port=6000 --debug=true
 ```
 
@@ -326,10 +344,10 @@ The following settings that can be configured via command-line arguments when st
 
 ### Run the user service
 
-run the following command at the root project
+At the project root directory, enter the command shown below:
 
 ```bash
-# Run the user service
+cd ./services/users
 python user_service.py --port=6001 --debug=true
 ```
 
@@ -338,13 +356,14 @@ The following settings that can be configured via command-line arguments when st
 - `port`: The port number to run the application on (default: `6001`)
 - `debug`: Runs the application in debug mode. Applications running in debug mode will automatically reload in response to file changes. (default: `true`)
 
-### Run the public api service
+### Run the public API service
 
-run the following command at the root project
+> Public API Service assumes that Listings Service is hosted on port 6000 and Users Service is hosted on port 8000.
+
+At the project root directory, enter the command shown below:
 
 ```bash
-# Run the public api service
-python public_api.py --port=6002 --debug=true
+python ./services/public-api/public-api.py --port=6002 --debug=true
 ```
 
 The following settings that can be configured via command-line arguments when starting the app:
@@ -352,13 +371,4 @@ The following settings that can be configured via command-line arguments when st
 - `port`: The port number to run the application on (default: `6002`)
 - `debug`: Runs the application in debug mode. Applications running in debug mode will automatically reload in response to file changes. (default: `true`)
 
-### Create listings
-
-Time to add some data into the listing service!
-
-```bash
-curl localhost:8888/listings -XPOST \
-    -d user_id=1 \
-    -d listing_type=rent \
-    -d price=4500
-```
+The services have been set up and we can submit HTTP request using `curl` command or other means (applications such as Postman)
