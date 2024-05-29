@@ -358,7 +358,7 @@ The following settings that can be configured via command-line arguments when st
 
 ### Run the public API service
 
-> Public API Service assumes that Listings Service is hosted on port 6000 and Users Service is hosted on port 8000.
+> Public API Service assumes that Listings Service is hosted on port 6000 and Users Service is hosted on port 6001.
 
 At the project root directory, enter the command shown below:
 
